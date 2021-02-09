@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.14.1  feb/2021  by mountaineerbr
+# v0.14.2  feb/2021  by mountaineerbr
 
 #defaults
 
@@ -353,7 +353,7 @@ mcapf()
 	{
 		jq -r '.data.market_cap_percentage | keys_unsorted[] as $k | "\($k) \(.[$k])"' "$CGKGLOBAL" | awk '{ printf "  # %s____:=%.4f%%\n", toupper($1), $2 }'
 		jq -r '(100-(.data.market_cap_percentage|add))' "$CGKGLOBAL" | awk '{ printf "  # Others_:=%.4f%%\n", $1 }'
-	} | column -t -NA,B -RB
+	} | column -t -d -s= -NA,B -RB
 
 	echo -e "\n## Total Market Cap"
 	echo -e " # Equivalent in"
@@ -394,13 +394,12 @@ mcapf()
 	echo -e "\n## Price Stats (${1^^})"
 	jq -r '.[]|"\(.symbol) \(.high_24h) \(.low_24h) \(.price_change_24h) \(.price_change_percentage_24h)"' "$MARKETGLOBAL" |
 		awk '{ printf "  # %s=%s=%s=%s=%.4f%%\n", toupper($1) , $2 , $3 , $4 , $5 }' |
-		column -t -s"=" -N"  # SYMBOL,HIGH(24h),LOW(24h),CHANGE,CHANGE"
+		column -t -s"=" -N"  # SYMBOL,HIGH(24h),LOW(24h),CHANGE,CHANGE%" -R"HIGH(24h),LOW(24h),CHANGE,CHANGE%"
 
 	echo -e "\n## All Time Highs (${1^^})"
 	jq -r '.[]|"\(.symbol) \(.ath) \(.ath_change_percentage) \(.ath_date)"' "$MARKETGLOBAL" |
 		awk '{ printf "  # %s=%s=%.4f%%= %s\n", toupper($1) , $2 , $3 , $4 }' |
-		column -t -s'=' -N'  # SYMBOL,PRICE,CHANGE,DATE'
-
+		column -t -s'=' -N'  # SYMBOL,PRICE,CHANGE,DATE' -R'PRICE,CHANGE,DATE'
 
 	echo -e "\n## Defi Market"
 	#defi markets
