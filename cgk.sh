@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.14  feb/2021  by mountaineerbr
+# v0.14.1  feb/2021  by mountaineerbr
 
 #defaults
 
@@ -295,17 +295,20 @@ mcapf()
 	#-d only dominance?
 	if (( DOMOPT ))
 	then
-		if [[ -n "$1" ]] && DOM="$( jq -e ".data.market_cap_percentage.${1,,}//empty" "$CGKGLOBAL" )"
+		if [[ -n "$1" ]] &&
+			DOM="$( jq -e ".data.market_cap_percentage.${1,,}//empty" "$CGKGLOBAL" )"
 		then
 			printf "%.${SCL}f %%\n" "${DOM}"
 		else
-			printf 'Symbol\tDominance%%\n'
+			{
+				jq -r '.data.market_cap_percentage|to_entries[] | [.key, .value] | @tsv' "$CGKGLOBAL" |
+					awk '{ printf "%s\t%.4f%%\n", toupper($1) , $2 }'
 
-			jq -r '.data.market_cap_percentage|to_entries[] | [.key, .value] | @tsv' "$CGKGLOBAL"
-			
-			totale=( $( jq -r '.data.market_cap_percentage[]' "$CGKGLOBAL" ) )
-			printf 'Sum:\t%.4f\n' "$( bc <<< "scale=16; ( ${totale[@]/%/+} 0 ) / 1" )"
-			jq -r '(100-(.data.market_cap_percentage|add))' "$CGKGLOBAL" | awk '{ printf "Oth:   %8.4f\n", $1 }'
+				totale=( $( jq -r '.data.market_cap_percentage[]' "$CGKGLOBAL" ) )
+				printf 'Sum:\t%.4f%%\n' "$( bc <<< "scale=16; ( ${totale[@]/%/+} 0 ) / 1" )"
+				jq -r '(100-(.data.market_cap_percentage|add))' "$CGKGLOBAL" |
+					awk '{ printf "Oth:\t%.4f%%\n", $1 }'
+			} | column -t -N'Symbol,Dominance' -R'Dominance'
 		fi
 
 		exit
@@ -344,69 +347,59 @@ mcapf()
 	 # Upcoming: $( jq -r '.data.upcoming_icos' "$CGKGLOBAL" )
 	 # Ongoing_: $( jq -r '.data.ongoing_icos' "$CGKGLOBAL" )
 	 # Ended___: $( jq -r '.data.ended_icos' "$CGKGLOBAL" )
-
-	## Dominance (Top 10)
-	$( jq -r '.data.market_cap_percentage | keys_unsorted[] as $k | "\($k) \(.[$k])"' "$CGKGLOBAL" | awk '{ printf "  # %s____: %8.4f%%\n", toupper($1), $2 }' )
-	$( jq -r '(100-(.data.market_cap_percentage|add))' "$CGKGLOBAL" | awk '{ printf "  # Others_: %8.4f%%\n", $1 }' )
 	!
 
-	printf "\n## Total Market Cap\n"
-	printf " # Equivalent in\n"
+	echo -e "\n## Dominance (Top 10)"
+	{
+		jq -r '.data.market_cap_percentage | keys_unsorted[] as $k | "\($k) \(.[$k])"' "$CGKGLOBAL" | awk '{ printf "  # %s____:=%.4f%%\n", toupper($1), $2 }'
+		jq -r '(100-(.data.market_cap_percentage|add))' "$CGKGLOBAL" | awk '{ printf "  # Others_:=%.4f%%\n", $1 }'
+	} | column -t -NA,B -RB
+
+	echo -e "\n## Total Market Cap"
+	echo -e " # Equivalent in"
 	printf "    %s____: %'22.2f\n" "${1^^}" "$( jq -r ".data.total_market_cap.${1,,}" "$CGKGLOBAL" )"
 	if [[ -n "${NOARG}" ]]
 	then
-		printf "    EUR____: %'22.2f\n" "$( jq -r '.data.total_market_cap.eur' "$CGKGLOBAL" )"
-		printf "    GBP____: %'22.2f\n" "$( jq -r '.data.total_market_cap.gbp' "$CGKGLOBAL" )"
-		printf "    BRL____: %'22.2f\n" "$( jq -r '.data.total_market_cap.brl' "$CGKGLOBAL" )"
-		printf "    JPY____: %'22.2f\n" "$( jq -r '.data.total_market_cap.jpy' "$CGKGLOBAL" )"
-		printf "    CNY____: %'22.2f\n" "$( jq -r '.data.total_market_cap.cny' "$CGKGLOBAL" )"
-		printf "    XAU(oz): %'22.2f\n" "$( jq -r '.data.total_market_cap.xau' "$CGKGLOBAL" )"
-		printf "    BTC____: %'22.2f\n" "$( jq -r '.data.total_market_cap.btc' "$CGKGLOBAL" )"
-		printf "    ETH____: %'22.2f\n" "$( jq -r '.data.total_market_cap.eth' "$CGKGLOBAL" )"
-		printf "    XRP____: %'22.2f\n" "$( jq -r '.data.total_market_cap.xrp' "$CGKGLOBAL" )"
+		for c in eur gbp brl jpy cny xau btc eth xrp
+		do printf "    %s____: %'22.2f\n" "${c^^}" "$( jq -r ".data.total_market_cap.${c,,}" "$CGKGLOBAL" )"
+		done
 	fi
 	printf " # Change(%%USD/24h): %.4f %%\n" "$( jq -r '.data.market_cap_change_percentage_24h_usd' "$CGKGLOBAL" )"
 
-	cat <<-!
+	echo -e "\n## Market Cap per Coin"
+	jq -r '.[]|"\(.symbol) \(.market_cap)  \(.market_cap_change_percentage_24h)"' "$MARKETGLOBAL" |
+		awk '{ printf "  # %s=%'"'"'.2f=%.4f%%\n", toupper($1) , $2 , $3 }' |
+		column -t -s'=' -N"# SYMBOL,CAP(${1^^}),CHANGE(24h)" -R"CAP(${1^^}),CHANGE(24h)"
 
-	## Market Cap per Coin
-	# SYMBOL      CAP(${1^^})            CHANGE(24h)
-	$( jq -r '.[]|"\(.symbol) \(.market_cap)  \(.market_cap_change_percentage_24h)"' "$MARKETGLOBAL"  | awk '{ printf "  # %s  %'"'"'22.2f    %.4f%%\n", toupper($1) , $2 , $3 , $4 }' )
-	!
-
-	printf "\n## Market Volume (Last 24H)\n"
-	printf " # Equivalent in\n"
+	echo -e "\n## Market Volume (Last 24H)"
+	echo " # Equivalent in"
 	printf "    %s_____ %'22.2f\n" "${1^^}" "$( jq -r ".data.total_volume.${1,,}" "$CGKGLOBAL" )"
 	if [[ -n "${NOARG}" ]]
 	then
-		printf "    EUR____: %'22.2f\n" "$( jq -r '.data.total_volume.eur' "$CGKGLOBAL" )"
-		printf "    GBP____: %'22.2f\n" "$( jq -r '.data.total_volume.gbp' "$CGKGLOBAL" )"
-		printf "    BRL____: %'22.2f\n" "$( jq -r '.data.total_volume.brl' "$CGKGLOBAL" )"
-		printf "    JPY____: %'22.2f\n" "$( jq -r '.data.total_volume.jpy' "$CGKGLOBAL" )"
-		printf "    CNY____: %'22.2f\n" "$( jq -r '.data.total_volume.cny' "$CGKGLOBAL" )"
-		printf "    XAU(oz): %'22.2f\n" "$( jq -r '.data.total_volume.xau' "$CGKGLOBAL" )"
-		printf "    BTC____: %'22.2f\n" "$( jq -r '.data.total_volume.btc' "$CGKGLOBAL" )"
-		printf "    ETH____: %'22.2f\n" "$( jq -r '.data.total_volume.eth' "$CGKGLOBAL" )"
-		printf "    XRP____: %'22.2f\n" "$( jq -r '.data.total_volume.xrp' "$CGKGLOBAL" )"
+		for c in eur gbp brl jpy cny xau btc eth xrp
+		do printf "    %s____: %'22.2f\n" "${c^^}" "$( jq -r ".data.total_volume.${c,,}" "$CGKGLOBAL" )"
+		done
 	fi
 	
-	cat <<-!
+	echo -e "\n## Market Volume per Coin (Last 24H)"
+	jq -r '.[]|"\(.symbol) \(.total_volume) '${1^^}' \(.market_cap_change_percentage_24h)"' "$MARKETGLOBAL" |
+		awk '{ printf "  # %s=%'"'"'.2f %s=%.4f%%\n", toupper($1) , $2 , $3 , $4 }' |
+		column -t -s"=" -N'# SYMBOL,VOLUME,CHANGE' -R'VOLUME,CHANGE'
 
-	## Market Volume per Coin (Last 24H)
-	# SYMBOL      VOLUME                  CHANGE
-	$( jq -r '.[]|"\(.symbol) \(.total_volume) '${1^^}' \(.market_cap_change_percentage_24h)"' "$MARKETGLOBAL"  | awk '{ printf "  # %s   %'"'"'22.2f %s    %.4f%%\n", toupper($1) , $2 , $3 , $4 }' )
+	echo -e "\n## Supply and All Time High"
+	jq -r '.[]|"\(.symbol) \(.circulating_supply) \(.total_supply)"' "$MARKETGLOBAL" |
+		awk '{ printf "  # %s=%'"'"'.2f=%'"'"'.2f\n", toupper($1) , $2 , $3 }' |
+		column -t -s"=" -N'  # SYMBOL,CIRCULATING_SUPPLY,TOTAL_SUPPLY' -R'CIRCULATING_SUPPLY,TOTAL_SUPPLY'
 
-	## Supply and All Time High
-	# SYMBOL       CIRCULATING_SUPPLY     TOTAL_SUPPLY
-	$( jq -r '.[]|"\(.symbol) \(.circulating_supply) \(.total_supply)"' "$MARKETGLOBAL"  | awk '{ printf "  # %s      %'"'"'22.2f   %'"'"'22.2f\n", toupper($1) , $2 , $3 }' )
+	echo -e "\n## Price Stats (${1^^})"
+	jq -r '.[]|"\(.symbol) \(.high_24h) \(.low_24h) \(.price_change_24h) \(.price_change_percentage_24h)"' "$MARKETGLOBAL" |
+		awk '{ printf "  # %s=%s=%s=%s=%.4f%%\n", toupper($1) , $2 , $3 , $4 , $5 }' |
+		column -t -s"=" -N"  # SYMBOL,HIGH(24h),LOW(24h),CHANGE,CHANGE"
 
-	## Price Stats (${1^^})
-	$( jq -r '.[]|"\(.symbol) \(.high_24h) \(.low_24h) \(.price_change_24h) \(.price_change_percentage_24h)"' "$MARKETGLOBAL"  | awk '{ printf "  # %s=%s=%s=%s=%.4f%%\n", toupper($1) , $2 , $3 , $4 , $5 }' | column -t -s"=" -N"  # SYMBOL,HIGH(24h),LOW(24h),CHANGE,CHANGE" )
-
-	## All Time Highs (${1^^})
-	$( jq -r '.[]|"\(.symbol) \(.ath) \(.ath_change_percentage) \(.ath_date)"' "$MARKETGLOBAL"  | awk '{ printf "  # %s=%s=%.4f%%= %s\n", toupper($1) , $2 , $3 , $4 }' | column -t -s'=' -N'  # SYMBOL,PRICE,CHANGE,DATE' )
-	!
-
+	echo -e "\n## All Time Highs (${1^^})"
+	jq -r '.[]|"\(.symbol) \(.ath) \(.ath_change_percentage) \(.ath_date)"' "$MARKETGLOBAL" |
+		awk '{ printf "  # %s=%s=%.4f%%= %s\n", toupper($1) , $2 , $3 , $4 }' |
+		column -t -s'=' -N'  # SYMBOL,PRICE,CHANGE,DATE'
 
 
 	echo -e "\n## Defi Market"
