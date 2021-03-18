@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.14.4  mar/2021  by mountaineerbr
+# v0.14.5  mar/2021  by mountaineerbr
 
 #defaults
 
@@ -12,6 +12,9 @@ DEFVSCUR=usd
 
 #scale, defaults=16
 SCLDEFAULTS=16
+
+#timeout (seconds, curl/wget)
+TOUT=16
 
 #don't change these
 #set number format
@@ -248,6 +251,9 @@ FIATCODES=( usd aed ars aud bdt bhd bmd brl cad chf clp cny
 ## -d dominance opt
 mcapf()
 {
+	#scale
+	SCL="$SCL:-${SCLDEFAULTS}"
+
 	#discard AMOUNT in $1
 	(( $1 )) 2>/dev/null && shift 
 
@@ -1169,8 +1175,6 @@ fi
 #curl or wget
 #user agent
 UAG='user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36'
-#timeout (seconds)
-TOUT=8
 if command -v curl &>/dev/null
 then
 	YOURAPP=( curl -s -L --compressed --max-time $TOUT --header "$UAG" )
@@ -1252,8 +1256,7 @@ fi
 
 #bank opt?
 #speed up script a little if these testes are met:
-if (( BANK )) ||
-	[[ \ "${FIATCODES[*]}"\  = *\ "${2,,}"\ * ]]
+if (( BANK )) || [[ \ "${FIATCODES[*]}"\  = *\ "${2,,}"\ * ]]
 then
 	bankf "${@}" || {
 		: >"$ERRSIG"
