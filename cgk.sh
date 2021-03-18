@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.14.2  feb/2021  by mountaineerbr
+# v0.14.4  mar/2021  by mountaineerbr
 
 #defaults
 
@@ -1159,19 +1159,6 @@ shift $(( OPTIND - 1 ))
 #set exports
 export CGKTEMPLIST1 CGKTEMPLIST2 CGKRATERAW
 
-#set scale
-SCL_ORIG="$SCL"
-if [[ "$SCL" != 0 ]] && ! (( SCL ))
-then
-	SCL="$SCLDEFAULTS"
-
-	#set result scale to 2 if opt -o is set
-	[[ -n "$OOPT" ]] && SCL=2
-
-	#set result scale to nought if opt -x is set
-	((SATOPT)) && SCL=0
-fi
-
 # Test for must have packages
 if ! command -v jq &>/dev/null
 then
@@ -1181,15 +1168,17 @@ fi
 
 #curl or wget
 #user agent
-UAG='user-agent: Mozilla/5.0 Gecko'
+UAG='user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.83 Safari/537.36'
+#timeout (seconds)
+TOUT=8
 if command -v curl &>/dev/null
 then
-	YOURAPP=( curl -s -L --compressed --header "$UAG" )
+	YOURAPP=( curl -s -L --compressed --max-time $TOUT --header "$UAG" )
 	YOURAPP3=( curl -\# -L --compressed --header "$UAG" )
 	YOURAPP2=( "${YOURAPP[@]}" --head )
 elif command -v wget &>/dev/null
 then
-	YOURAPP=( wget -q -O- --header "$UAG" )
+	YOURAPP=( wget -q -O-  --timeout="$TOUT" --header "$UAG" )
 	YOURAPP3=( wget -q -O- --show-progress --header "$UAG" )
 	YOURAPP2=( "${YOURAPP[@]}" -S )
 else
@@ -1242,17 +1231,23 @@ then
 fi
 
 #set default currencies if none set
-[[ -z "$2" ]] &&  	set -- "$1" "${DEFCUR,,}"
-[[ -z "$3" ]] && 	set -- "$1" "$2" "${DEFVSCUR,,}"
+[[ -z "$2" ]] && set -- "$1" "${DEFCUR,,}"
+[[ -z "$3" ]] && set -- "$1" "$2" "${DEFVSCUR,,}"
 
 #change .=- to ``bitcoin''
-[[ "$2" = [.=-] ]] && 	set -- "$1" bitcoin "$3"
-if [[ "$3" = [.=-] ]]
+[[ "$2" = [.=-] ]] && set -- "$1" bitcoin "$3"
+[[ "$3" = [.=-] ]] && set -- "$1" "$2" btc
+
+#set scale
+if [[ "$SCL" != 0 ]] && ! (( SCL ))
 then
-	set -- "$1" "$2" btc
-	
-	#opt -x has preference over [.=-]
-	((SATOPT)) || SCL="${SCL_ORIG:-8}"
+	SCL="$SCLDEFAULTS"
+
+	#set result scale to 2 if opt -o is set
+	[[ -n "$OOPT" ]] && SCL=2
+
+	#set result scale to nought if opt -x is set
+	((SATOPT)) && [[ "${3,,}" = btc ]] && SCL=0
 fi
 
 #bank opt?
