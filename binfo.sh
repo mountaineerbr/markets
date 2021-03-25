@@ -1,6 +1,6 @@
 #!/bin/bash
 # binfo.sh -- bitcoin blockchain explorer for bash
-# v0.9.15  jan/2021  by mountaineerbr
+# v0.9.16  mar/2021  by mountaineerbr
 
 #defaults
 
@@ -872,7 +872,7 @@ rtxf() {
 		"",
 		"Transaction information",
 		"TxHash_: \(.hash)",
-		"BlkHgt_: \(.block_height)\t\t\tVersion: \(.ver)",
+		"BlkHgt_: \(if .block_height == null then "mempool" else .block_height end)\t\t\tVersion: \(.ver)",
 		"Tx_Size: \(.size) bytes\t\tWeight_: \(.weight)",
 		"LockTime: \(.lock_time)",
 		"Time___: \(.time | strftime("%Y-%m-%dT%H:%M:%SZ"))",
@@ -1120,6 +1120,10 @@ then
 elif [[ -n "$UTXOPT" ]]
 then
 	utxaddf "$@"
+#mempool (blockchair)
+elif [[ -n "$MEMOPT" ]]
+then
+	utxf
 #call opt functions
 else
 	for arg in "$@"
@@ -1142,10 +1146,6 @@ else
 		elif [[ "$TXOPT" = chair ]]
 		then
 			chairrtxf "$arg"
-		#mempool
-		elif [[ -n "$MEMOPT" ]]
-		then
-			utxf
 		else
 			notok=1
 		fi
