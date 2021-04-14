@@ -1,6 +1,6 @@
 #!/bin/bash
 # cmc.sh -- coinmarketcap.com api access
-# v0.11.10  jan/2021  by mountaineerbr
+# v0.11.12  apr/2021  by mountaineerbr
 
 #your cmc api key
 #CMCAPIKEY=
@@ -183,8 +183,6 @@ cleanf()
 
 	#rm temp dir
 	[[ -d "$TMPD" ]] && rm -rf "$TMPD"
-
-	exit 0
 }
 
 #check for error response
@@ -524,7 +522,10 @@ mainf()
 	fi
 
 	#get pair rate
-	CMCRATE="$(jq -r ".data[] | .quote.${3^^}.price" <"${CMCJSON}" | sed 's/e/*10^/g')"
+	if ! CMCRATE="$(jq -r ".data[] | .quote.${3^^}.price" <"${CMCJSON}" 2>/dev/null)"
+	then jq -r '.status.error_message' <"${CMCJSON}" ;exit 1
+	else CMCRATE="$(sed 's/e/*10^/g' <<<"$CMCRATE")"
+	fi
 	
 	#print json timestamp ?
 	if (( TIMEST ))

@@ -51,7 +51,7 @@ __bitfinex.sh__ | Bitfinex exchange public api for live trade prices
 __brasilbtc.sh__ | Fetches bitcoin rates from brazilian exchanges public apis. Puxa cotações de bitcoin de agências de câmbio brasileiras de apis públicas
 ___cgk.sh___ | <Coinggecko.com> public api, convert one crypto, bank/fiat or metal currency into any another, market ticker, cryptocurrency ticker. This is my favorite everyday-use script for all-currency rates!
 __clay.sh__ | <Currencylayer.com> central bank currency, precious metal and cryptocurrency converter, free api key
-__cmc.sh__ |  (!deprecation notice!) <Coinmarketcap.com> convert any amount of one crypto, bank/fiat currency or metal into any another, NON-public api access
+__cmc.sh__ |  <Coinmarketcap.com> convert any amount of one crypto, bank/fiat currency or metal into any another, NON-public api access
 __erates.sh__ | <Exchangeratesapi.io> public api, currency converter (same API as Alexander Epstein's Bash-Snippets/currency)
 __foxbit.sh__ | FoxBit exchange public API rates. Acesso ao api público da Foxbit para cotações
 __hgbrasil.sh__ | Bovespa and tax rates. Cotações de ações da Bovespa e índices e taxas (CDI e SELIC) do api da hg brasil
