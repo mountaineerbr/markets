@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16.5  apr/2021  by mountaineerbr
+# v0.16.6  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -310,13 +310,22 @@ cachef()
 #update user cahe files
 cacheupf()
 {
-	#update cache files manually
-	echo 'Updating CoinGecko resource file(s) (JSON data)..' >&2
-	#update cache
-	echo "$CGKTEMPLIST" >&2
-	CGKEXPIRATION=0 cachef "$CGKTEMPLIST" "$COINLISTURL" >/dev/null ;ret+=( $? )
-	echo "$CGKTEMPLIST0" >&2
-	CGKEXPIRATION=0 cachef "$CGKTEMPLIST0" "$COINLISTURL0" >/dev/null ;ret+=( $? )
+	local ret
+	#check cache files availability
+	if ((OPTC)) && [[ -d "$USERCACHE" ]]
+	then
+		#update cache files manually
+		echo 'Updating CoinGecko resource file(s) (JSON data)..' >&2
+		#update cache
+		echo "$CGKTEMPLIST" >&2
+		CGKEXPIRATION=0 cachef "$CGKTEMPLIST" "$COINLISTURL" >/dev/null ;ret+=( $? )
+		echo "$CGKTEMPLIST0" >&2
+		CGKEXPIRATION=0 cachef "$CGKTEMPLIST0" "$COINLISTURL0" >/dev/null ;ret+=( $? )
+	else
+		((OPTC)) || echo "$SN: err -- option -e not set" >&2
+		[[ -d "$USERCACHE" ]] || echo "$SN: user cache unavailable -- $USERCACHE" >&2
+		ret+=( 1 )
+	fi
 
 	#sum exit codes
 	return $(( ${ret[@]/%/+} 0 ))

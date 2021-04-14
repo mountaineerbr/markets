@@ -1,6 +1,6 @@
 #!/bin/bash
 # Binance.sh  --  Market data from Binance public APIs
-# v0.12.1  apr/2021  by mountaineerbr
+# v0.12.2  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -18,7 +18,6 @@ SCLDEFAULTS=16
 RSLEEP=2  #defaults=2 seconds
 
 #make sure locale is set correctly
-#export LC_NUMERIC=C
 export LC_NUMERIC=en_US.UTF-8
 
 #script name
@@ -337,11 +336,20 @@ cachef()
 #update user cahe files
 cacheupf()
 {
-	#update cache files manually
-	echo 'Updating Binance resource file(s) (JSON data)..' >&2
-	#update cache
-	echo "$BNCTEMPLIST" >&2
-	BNCEXPIRATION=0 cachef "$BNCTEMPLIST" "$LISTADDR" >/dev/null ;ret+=( $? )
+	local ret
+	#check cache files availability
+	if ((OPTE)) && [[ -d "$USERCACHE" ]]
+	then
+		#update cache files manually
+		echo 'Updating Binance resource file(s) (JSON data)..' >&2
+		#update cache
+		echo "$BNCTEMPLIST" >&2
+		BNCEXPIRATION=0 cachef "$BNCTEMPLIST" "$LISTADDR" >/dev/null ;ret+=( $? )
+	else
+		((OPTE)) || echo "$SN: err -- option -e not set" >&2
+		[[ -d "$USERCACHE" ]] || echo "$SN: user cache unavailable -- $USERCACHE" >&2
+		ret+=( 1 )
+	fi
 
 	#sum exit codes
 	return $(( ${ret[@]/%/+} 0 ))
@@ -928,10 +936,10 @@ then
 	if
 		#verbose?
 		((OPTV)) && echo Setting option -n automatically.. >&2
-		BANKR="$( bankf "$@" )"
+		R="$( bankf "$@" )"
 	then
 		#calc and printf results
-		printf "${FSTR}\n" "$BANKR"
+		printf "${FSTR}\n" "$R"
 		exit 0
 	else
 		echo "$SN: unsupported market -- ${UARGS[@]:1:2}" >&2
