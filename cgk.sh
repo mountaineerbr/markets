@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16.3  apr/2021  by mountaineerbr
+# v0.16.4  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -896,8 +896,8 @@ listsf()
 	printf "\nList of (officially) supported VS_CURRENCY\n"
 	jq -r '.[]' <<<"$VSCLISTS" | tr "[:lower:]" "[:upper:]" | sort | column -c 60
 	
-	printf '\nCriptos: %4d\n' "$( jq -r '.[].id' <<<"$FCLISTS" | wc -l )"
-	printf 'VsCurre: %4d\n' "$( jq -r '.[]' <<<"$VSCLISTS" | wc -l )"
+	printf '\nCriptos: %5d\n' "$( jq -r '.[].id' <<<"$FCLISTS" | wc -l )"
+	printf 'VsCurre: %5d\n' "$( jq -r '.[]' <<<"$VSCLISTS" | wc -l )"
 }
 
 # List of from_currencies
