@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.14.5  mar/2021  by mountaineerbr
+# v0.14.6  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -239,11 +239,14 @@ OPTIONS
 
 #fiat codes
 #for quick testing
-#removed: btc eth ltc bch bnb eos xrp xlm
-FIATCODES=( usd aed ars aud bdt bhd bmd brl cad chf clp cny
-	czk dkk eur gbp hkd huf idr ils inr jpy krw kwd
-	lkr mmk mxn myr nok nzd php pkr pln rub sar sek
-	sgd thb try twd uah vef vnd zar xdr xag xau )  #47
+FIATCODES=(
+btc   eth   ltc	  bch	bnb   eos   xrp	  xlm	link  dot   yfi
+usd   aed   ars	  aud	bdt   bhd   bmd	  brl	cad   chf   clp
+cny   czk   dkk	  eur	gbp   hkd   huf	  idr	ils   inr   jpy
+krw   kwd   lkr	  mmk	mxn   myr   ngn	  nok	nzd   php   pkr
+pln   rub   sar	  sek	sgd   thb   try	  twd	uah   vef   vnd
+zar   xdr   xag	  xau	bits  sats
+)
 
 
 ## Functions
@@ -871,7 +874,7 @@ clistf()
 	if [[ ! -e "$CGKTEMPLIST1" ]]
 	then
 		# Retrieve list from CGK
-		CGKTEMPLIST1="$TMPD/.cgklist1.json"
+		CGKTEMPLIST1="$TMPD/cgklist1.json"
 		"${YOURAPP[@]}" "https://api.coingecko.com/api/v3/coins/list" |
 		jq -r '[.[] | { key: .symbol, value: .id } ] | from_entries' >"$CGKTEMPLIST1"
 	fi
@@ -1037,7 +1040,7 @@ mainf()
 	local rate
 
 	#if $CGKRATERAW is set, it is from bank function
-	if [[ -f "${CGKRATERAW}" ]]
+	if [[ -e "${CGKRATERAW}" ]]
 	then
 		# Result for bank subfunction -b
 		if rate=$( jq -er '."'${2,,}'"."'${3,,}'" // empty' "$CGKRATERAW" | sed 's/e/*10^/g' ) &&
