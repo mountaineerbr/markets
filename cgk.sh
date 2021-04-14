@@ -322,7 +322,7 @@ cacheupf()
 		echo "$CGKTEMPLIST0" >&2
 		CGKEXPIRATION=0 cachef "$CGKTEMPLIST0" "$COINLISTURL0" >/dev/null ;ret+=( $? )
 	else
-		((OPTC)) || echo "$SN: err -- option -e not set" >&2
+		((OPTC)) || echo "$SN: err -- option -c is set" >&2
 		[[ -d "$USERCACHE" ]] || echo "$SN: user cache unavailable -- $USERCACHE" >&2
 		ret+=( 1 )
 	fi

@@ -346,7 +346,7 @@ cacheupf()
 		echo "$BNCTEMPLIST" >&2
 		BNCEXPIRATION=0 cachef "$BNCTEMPLIST" "$LISTADDR" >/dev/null ;ret+=( $? )
 	else
-		((OPTE)) || echo "$SN: err -- option -e not set" >&2
+		((OPTE)) || echo "$SN: err -- option -e is set" >&2
 		[[ -d "$USERCACHE" ]] || echo "$SN: user cache unavailable -- $USERCACHE" >&2
 		ret+=( 1 )
 	fi
