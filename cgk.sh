@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16  apr/2021  by mountaineerbr
+# v0.16.1  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -29,7 +29,8 @@ OPTC=1
 #expiration of cache files in seconds (3 days)
 EXPIRATION=259200
 #cache directory
-USERCACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
+USERCACHE=/tmp
+#USERCACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
 #list of from_currencies  (cgk.sh.json)
 CGKTEMPLIST="$USERCACHE/$SN.json"
 #list of vs_currencies    (cgk.sh.0.json)
