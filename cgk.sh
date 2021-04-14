@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16.2  apr/2021  by mountaineerbr
+# v0.16.3  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -28,7 +28,7 @@ SN="${0##*/}"
 OPTC=1
 #expiration of cache files in seconds
 #set to 0 or unset to disable expiration
-#EXPIRATION=259200  #(3 days)
+#CGKEXPIRATION=259200  #(3 days)
 #cache directory
 USERCACHE=/tmp
 #USERCACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
@@ -292,9 +292,9 @@ cachef()
 		#if cache file exists
 		#if file stamp is less than expiration
 		if [[ -s "$file" ]] && {
-			(( EXPIRATION==0)) || {
+			(( CGKEXPIRATION==0)) || {
 			stamp0=$(date +%s) stamp=$(stat --printf='%Y\n' "$file") &&
-			(( stamp0 < (stamp+EXPIRATION) ))
+			(( stamp0 < (stamp+CGKEXPIRATION) ))
 			}
 		}
 		then cat "$file" ;return
@@ -1223,7 +1223,7 @@ CGKTEMPLIST1="$TMPD/cgklist1.json"
 CGKTEMPLIST2="$TMPD/cgklist2.json"
 
 #set exports
-export CGKTEMPLIST CGKTEMPLIST0 CGKTEMPLIST1 CGKTEMPLIST2 CGKRATERAW OPTC TMPD BANKSKIP EXPIRATION
+export CGKTEMPLIST CGKTEMPLIST0 CGKTEMPLIST1 CGKTEMPLIST2 CGKRATERAW OPTC TMPD BANKSKIP CGKEXPIRATION
 
 ## Trap temp cleaning functions
 trap trapf EXIT INT TERM
