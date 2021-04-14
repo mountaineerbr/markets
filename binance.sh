@@ -1,6 +1,6 @@
 #!/bin/bash
 # Binance.sh  --  Market data from Binance public APIs
-# v0.12.2  apr/2021  by mountaineerbr
+# v0.12.3  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -344,7 +344,7 @@ cacheupf()
 		echo 'Updating Binance resource file(s) (JSON data)..' >&2
 		#update cache
 		echo "$BNCTEMPLIST" >&2
-		BNCEXPIRATION=0 cachef "$BNCTEMPLIST" "$LISTADDR" >/dev/null ;ret+=( $? )
+		"${YOURAPP[@]}" "$LISTADDR" >"$BNCTEMPLIST" ;ret+=( $? )
 	else
 		((OPTE)) || echo "$SN: err -- option -e is set" >&2
 		[[ -d "$USERCACHE" ]] || echo "$SN: user cache unavailable -- $USERCACHE" >&2
