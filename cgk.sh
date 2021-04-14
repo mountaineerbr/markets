@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16.4  apr/2021  by mountaineerbr
+# v0.16.5  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -102,8 +102,8 @@ DESCRIPTION
 	with requests of mostly static data and will improve script speed.
 	If you do not want to create/use cache files, set option -c. Run
 	script with option -u to force updating cache files, otherwise
-	they will be udpated every 3 days on use. Cache location
-	defaults=$USERCACHE .
+	they will not be updated automatically unless \$CGKEXPIRATION is
+	set, see script head source code. Cache defaults=$USERCACHE .
 
 	Coingecko.com api rate limit is currently 100 requests/minute.
 	
@@ -229,7 +229,7 @@ OPTIONS
 	Miscellaneous
 	-b 	  Bank currency function, force convertions between
 		  unofficially supported currency pairs; defaults=auto.
-	-c 	  Don't make or keep cache data (currency lists).
+	-c 	  Don't make or keep cache data (currency ids).
 	-h 	  Show this help.
 	-j 	  Debug; print raw data, usually json.
 	-u 	  Force update cache data from CoinGecko.
@@ -314,9 +314,9 @@ cacheupf()
 	echo 'Updating CoinGecko resource file(s) (JSON data)..' >&2
 	#update cache
 	echo "$CGKTEMPLIST" >&2
-	"${YOURAPP[@]}" "$COINLISTURL" >"$CGKTEMPLIST" ;ret+=( $? )
+	CGKEXPIRATION=0 cachef "$CGKTEMPLIST" "$COINLISTURL" >/dev/null ;ret+=( $? )
 	echo "$CGKTEMPLIST0" >&2
-	"${YOURAPP[@]}" "$COINLISTURL0" >"$CGKTEMPLIST0" ;ret+=( $? )
+	CGKEXPIRATION=0 cachef "$CGKTEMPLIST0" "$COINLISTURL0" >/dev/null ;ret+=( $? )
 
 	#sum exit codes
 	return $(( ${ret[@]/%/+} 0 ))

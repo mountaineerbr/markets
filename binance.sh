@@ -1,6 +1,6 @@
 #!/bin/bash
 # Binance.sh  --  Market data from Binance public APIs
-# v0.11.4  feb/2021  by mountaineerbr
+# v0.12.1  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -9,10 +9,6 @@ WHICHB=com
 #com -- Malta
 #us -- US
 #je -- Jersey (DEPRECATED)
-
-#do not change the following
-#script name
-SN="${0##*/}"
 
 #scale, server defaults
 SCLDEFAULTS=16
@@ -25,16 +21,31 @@ RSLEEP=2  #defaults=2 seconds
 #export LC_NUMERIC=C
 export LC_NUMERIC=en_US.UTF-8
 
+#script name
+SN="${0##*/}"
+
+#binance resource files (optional)
+#use cache files? set to 0 to disable
+OPTE=1
+#expiration of cache files in seconds
+#set to 0 or unset to disable expiration
+#BNCEXPIRATION=259200  #(3 days)
+#cache directory
+USERCACHE=/tmp
+#USERCACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
+#list of from_currencies  (binance.sh.json)
+BNCTEMPLIST="$USERCACHE/$SN.json"
+
 HELP="NAME
 	$SN - Market data from Binance public APIs
 
 
 SYNOPSIS
-	$SN [-NUM] [-ouv] [AMOUNT] MARKET
-	$SN [-NUM] -n [-ov] [AMOUNT] FROM_CURRENCY TO_CURRENCY
-	$SN [-NUM] [-aciorstwzX] [-u] MARKET
-	$SN [-bbt] [-u] MARKET
-	$SN [-hlV]
+	$SN [-NUM] [-eouv] [AMOUNT] MARKET
+	$SN [-NUM] -n [-eov] [AMOUNT] FROM_CURRENCY TO_CURRENCY
+	$SN [-NUM] [-aeciorstwzX] [-u] MARKET
+	$SN [-bbt] [-ue] MARKET
+	$SN [-hlUV]
 
 	Get the latest data from Binance markets from public APIs. This 
 	script can calculate any amount of one cryptocurrency into
@@ -89,6 +100,14 @@ DESCRIPTION
 	evident when calculating custom rates with this option, see usage
 	example (7). This option is set automatically if the script cannot
 	fetch rates for user-input market pair with the defaults function.
+
+	By defaults, the script will keep a local cache of the available
+	currency ids from Binance. That will avoid flooding the server
+	with requests of mostly static data and will improve script speed.
+	If you do not want to create/use cache files, set option -e. Run
+	script with option -U to force updating cache files, otherwise
+	they will not be updated automatically unless \$BNCEXPIRATION is
+	set, see script head source code. Cache defaults=$USERCACHE .
 
 
 LIMITS ON WEBSOCKET
@@ -178,10 +197,12 @@ OPTIONS
 	-a 	   Autoreconnect in case of temporary errors, only when
 		   using Websocat package; defaults=unset.
 	-d 	   Print raw data from API, for debugging.
+	-e 	   Don't make or keep cache data (currency ids).
 	-h 	   Show this help.
 	-j 	   Set <binance.je> server; defaults=<binance.com>.
 	-l 	   List supported markets.
 	-r 	   Set Curl/Wget instead of websocket with options -swi .
+	-U 	   Force update cache data from Binance.
 	-u 	   Set <binance.us> server; defaults=<binance.com>.
 	-V 	   Print script version.
 	-v 	   Print market pair.
@@ -216,8 +237,8 @@ OPTIONS
 #are taken into account these customrates are calculated
 bankf()
 {
-	local WHICHB LISTADDR MARKETS MKT REVMKT ADDR DATA BRATE RATE whichs c
-	typeset -a MARKETS whichs
+	local WHICHB MKT REVMKT ADDR DATA BRATE RATE whichs c
+	typeset -a whichs
 
 	#verbose?
 	((OPTV)) && echo Spread fees may apply >&2
@@ -232,8 +253,7 @@ bankf()
 			((OPTV)) && echo "Checking server: Binance.${WHICHB}" >&2
 
 			#get supported market list
-			LISTADDR="https://api.binance.${WHICHB}/api/v3/ticker/price" 
-			readarray -t MARKETS <<<"$( "${YOURAPP[@]}" "$LISTADDR" | jq -r '.[].symbol' )"
+			loadmarketsarrayf
 
 			#check and see if reverse market rate is in order
 			if [[ ! \ "${MARKETS[*]}"\  = *\ BTC${c^^}\ * ]] &&
@@ -288,32 +308,68 @@ bankf()
 	bc <<< "scale=16; ( (${1}) * ${TORATE})/${FROMRATE}"
 }
 
+## Cache manager
+cachef()
+{
+	local file url ret stamp0 stamp
+	file="$1" url="$2"
+
+	#check cache files availability
+	if ((OPTE)) && [[ -d "$USERCACHE" ]]
+	then
+		#if cache file exists
+		#if file stamp is less than expiration
+		if [[ -s "$file" ]] && {
+			(( BNCEXPIRATION==0)) || {
+			stamp0=$(date +%s) stamp=$(stat --printf='%Y\n' "$file") &&
+			(( stamp0 < (stamp+BNCEXPIRATION) ))
+			}
+		}
+		then cat "$file" ;return
+		elif "${YOURAPP[@]}" "$url" >"$file"
+		then cat "$file" ;return
+		fi
+	fi
+ 	
+	#print to stdout (no cache)
+	"${YOURAPP[@]}" "$url"
+}
+#update user cahe files
+cacheupf()
+{
+	#update cache files manually
+	echo 'Updating Binance resource file(s) (JSON data)..' >&2
+	#update cache
+	echo "$BNCTEMPLIST" >&2
+	BNCEXPIRATION=0 cachef "$BNCTEMPLIST" "$LISTADDR" >/dev/null ;ret+=( $? )
+
+	#sum exit codes
+	return $(( ${ret[@]/%/+} 0 ))
+}
+
+#get supported market list, required for following funcs
+loadmarketsarrayf()
+{
+	if (( ${#MARKETS[@]} == 0 ))
+	then MARKETS=( $( cachef "$BNCTEMPLIST" "$LISTADDR" | jq -r '.[].symbol' ) ) ;return
+	fi
+
+	return 0
+}
+
 #check to currency
 checktocurf()
 {
-	#get supported market list, required for following funcs
-	if (( ${#MARKETS[@]} == 0 ))
-	then
-		LISTADDR="https://api.binance.${WHICHB}/api/v3/ticker/price" 
-		typeset -a MARKETS
-		readarray -t MARKETS <<<"$( "${YOURAPP[@]}" "$LISTADDR" | jq -r '.[].symbol' )"
-	fi
-
 	#test if market/currency is valid
-	if ((BANK==0)) &&
+	if ((BANK==0)) && loadmarketsarrayf &&
 		[[ ! \ "${MARKETS[*]}"\  = *\ ${2^^}${3^^}\ * ]]
 	then
 		#default option
 		#check and see if reverse market rate is available
 		if [[ -z "$IOPT$SOPT$BOPT$BOPT$TOPT$COPT" ]] &&
 			[[ \ "${MARKETS[*]}"\  = *\ ${3^^}${2^^}\ * ]]
-		then
-			REVMKT=1/
-
-			#verbose
-			((OPTV)) && echo "Reverse rate of supported market: $3 $2" >&2
-		else
-			return 1
+		then REVMKT=1/  ;((OPTV)) && echo "Reverse rate of supported market: $3 $2" >&2
+		else return 1
 		fi
 	fi
 
@@ -330,7 +386,6 @@ errf() {
 		
 		#print json and log, too
 		echo "$JSON" | tee "$LOGF" >&2
-
 		echo "$SN: err detected in json" >&2
 		echo "$SN: log file at $LOGF" >&2
 		
@@ -342,8 +397,7 @@ errf() {
 colf() {
 	#check if given limit is valid - max 1000
 	if (( $1 < 2 )) || (( $1 > 1000 ))
-	then
-		set -- 250 "$2" "$3"
+	then set -- 250 "$2" "$3"
 	fi
 	 
 	#set addr
@@ -679,7 +733,7 @@ lcoinsf() {
 
 
 #parse options
-while getopts 1234567890abcdofhjlnistuvVwrXz opt
+while getopts 1234567890abcdeofhjlnistUuvVwrXz opt
 do
 	case $opt in
 		[0-9]) #scale setting
@@ -698,6 +752,11 @@ do
 			#printf 'Script cmds to fetch data:\n'
 			#grep -e 'YOURAPP' -e 'WEBSOCATC' <"$0" | sed -e 's/^[ \t]*//' | sort
 			DOPT=1
+			;;
+
+		e )
+			## Dont use cache files
+			OPTE=0
 			;;
 		o|f) #format thousands option
 			THOUSANDOPT="'"
@@ -733,6 +792,10 @@ do
 		u) #binance us
 			WHICHB='us'
 			;;
+		U )
+			## update user cache files
+			OPTU=1
+			;;
 		V) #script version
 			grep -m1 '\# v' "$0"
 			exit 0
@@ -758,42 +821,44 @@ do
 done
 shift $((OPTIND -1))
 
+#set and export variables
+LISTADDR="https://api.binance.${WHICHB}/api/v3/ticker/price" 
+export LISTADDR MARKETS
+typeset -a MARKETS
+
+
 #must have packages
 if ! command -v jq &>/dev/null
-then
-	echo "$SN: JQ is required" >&2
-	exit 1
+then echo "$SN: JQ is required" >&2 ;exit 1
 elif command -v curl &>/dev/null
-then
-	YOURAPP=( curl -sL --compressed )
+then YOURAPP=( curl -sL --compressed )
 elif command -v wget &>/dev/null
-then
-	YOURAPP=( wget -qO- )
-else
-	echo "$SN: curl or wget is required" >&2
-	exit 1
+then YOURAPP=( wget -qO- )
+else echo "$SN: curl or wget is required" >&2 ;exit 1
 fi
 
 #call opt funcs
-(( LOPT )) && { lcoinsf ;exit ;}
+if (( LOPT ))
+then
+	lcoinsf
+	exit
+#update user cahe files
+elif (( OPTU ))
+then
+	cacheupf
+	exit
+fi
 
 #set websocket pkg
 #websocat command
-if
-	[[ -n "$IOPT$SOPT$BOPT$TOPT" ]] &&
-	[[ -z "$CURLOPT" ]]
+if [[ -n "$IOPT$SOPT$BOPT$TOPT" ]] && [[ -z "$CURLOPT" ]]
 then
 	#choose websocat or wscat
 	if ((XOPT==0)) && command -v websocat &>/dev/null
-	then
-		WEBSOCATC=( websocat -nt --ping-interval 20 -E --ping-timeout 42 ${AUTOR[0]} )
+	then WEBSOCATC=( websocat -nt --ping-interval 20 -E --ping-timeout 42 ${AUTOR[0]} )
 	elif command -v wscat &>/dev/null
-	then
-		unset AUTOR
-		WEBSOCATC=( wscat -c )
-	else
-		echo "$SN: websocat or wscat is required" >&2
-		exit 1
+	then WEBSOCATC=( wscat -c ) ;unset AUTOR
+	else echo "$SN: websocat or wscat is required" >&2 ;exit 1
 	fi
 	
 	#set websocket address
@@ -842,9 +907,8 @@ set -- "${@^^}"
 #set btc as 'from_currency' for market code formation
 [[ -z "$2" ]] && set -- "$1" BTC
 
-#check again and set $REVMKT if needed
-#or set to_currency if none given
-if [[ -z "$3" ]] && ! checktocurf "$@"
+#set to_currency if none given
+if [[ -z "$3" ]]
 then
 	#set default vs_currency
 	if [[ "$WHICHB" = us ]]
@@ -855,7 +919,7 @@ then
 	fi
 fi 
 	
-#check again and set $REVMKT if needed
+#check and set $REVMKT if needed
 if ! checktocurf "$@"
 then
 	#try setting the bank function automatically?
@@ -864,10 +928,10 @@ then
 	if
 		#verbose?
 		((OPTV)) && echo Setting option -n automatically.. >&2
-		R="$( bankf "$@" )"
+		BANKR="$( bankf "$@" )"
 	then
 		#calc and printf results
-		printf "${FSTR}\n" "$R"
+		printf "${FSTR}\n" "$BANKR"
 		exit 0
 	else
 		echo "$SN: unsupported market -- ${UARGS[@]:1:2}" >&2
@@ -880,29 +944,23 @@ fi
 #call opt functions
 #detailed trade info
 if (( IOPT ))
-then
-	infof "$@"
+then infof "$@"
 #price websocket stream
 elif (( SOPT ))
-then
-	socketf "$@"
+then socketf "$@"
 #order book depth opts
 #order book depth 10
 elif (( BOPT == 1 ))
-then
-	bookdf "$@"
+then bookdf "$@"
 #order book total sizes
 elif (( BOPT == 2 ))
-then
-	booktf "$@"
+then booktf "$@"
 #24-h ticker
 elif (( TOPT ))
-then
-	tickerf "$@"
+then tickerf "$@"
 #price in columns
 elif (( COPT ))
-then
-	colf "$@"
+then colf "$@"
 #default function -- market rates
 else
 	#verbose
