@@ -1,6 +1,6 @@
 #!/bin/bash
 # cgk.sh -- coingecko.com api access
-# v0.16.1  apr/2021  by mountaineerbr
+# v0.16.2  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -26,8 +26,9 @@ SN="${0##*/}"
 #coingecko resource files (optional)
 #use cache files? set to 0 to disable
 OPTC=1
-#expiration of cache files in seconds (3 days)
-EXPIRATION=259200
+#expiration of cache files in seconds
+#set to 0 or unset to disable expiration
+#EXPIRATION=259200  #(3 days)
 #cache directory
 USERCACHE=/tmp
 #USERCACHE="${XDG_CACHE_HOME:-$HOME/.cache}"
@@ -290,9 +291,12 @@ cachef()
 	then
 		#if cache file exists
 		#if file stamp is less than expiration
-		if [[ -e "$file" ]] &&
+		if [[ -s "$file" ]] && {
+			(( EXPIRATION==0)) || {
 			stamp0=$(date +%s) stamp=$(stat --printf='%Y\n' "$file") &&
 			(( stamp0 < (stamp+EXPIRATION) ))
+			}
+		}
 		then cat "$file" ;return
 		elif "${YOURAPP[@]}" "$url" >"$file"
 		then cat "$file" ;return
@@ -1059,7 +1063,7 @@ mainf()
 	local rate
 
 	#if $CGKRATERAW is set, it is from bank function
-	if [[ -e "${CGKRATERAW}" ]]
+	if [[ -s "$CGKRATERAW" ]]
 	then
 		# Result for bank subfunction -b
 		if rate=$( jq -er '."'${2,,}'"."'${3,,}'" // empty' "$CGKRATERAW" | sed 's/e/*10^/g' ) &&
