@@ -896,8 +896,8 @@ listsf()
 	printf "\nList of (officially) supported VS_CURRENCY\n"
 	jq -r '.[]' <<<"$VSCLISTS" | tr "[:lower:]" "[:upper:]" | sort | column -c 60
 	
-	printf '\nCriptos: %s\n' "$( jq -r '.[].id' <<<"$FCLISTS" | wc -l )"
-	printf 'VsCurre: %s\n' "$( jq -r '.[]' <<<"$VSCLISTS" | wc -l )"
+	printf '\nCriptos: %4d\n' "$( jq -r '.[].id' <<<"$FCLISTS" | wc -l )"
+	printf 'VsCurre: %4d\n' "$( jq -r '.[]' <<<"$VSCLISTS" | wc -l )"
 }
 
 # List of from_currencies
