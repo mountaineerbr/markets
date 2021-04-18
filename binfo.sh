@@ -1,6 +1,6 @@
 #!/bin/bash
 # binfo.sh -- bitcoin blockchain explorer for bash
-# v0.9.16  mar/2021  by mountaineerbr
+# v0.9.17  apr/2021  by mountaineerbr
 
 #defaults
 
@@ -520,34 +520,24 @@ rblockf() {
 		set -- "$( "${YOURAPP[@]}" "https://blockchain.info/latestblock${key1}" 2>/dev/null | jq -r '.hash' )" || return 1
 	fi
 
-	if [[ -z "$RAWB" ]]
-	then
+	[[ -z "$RAWB" ]] &&
 		RAWB="$( "${YOURAPP2[@]}" "https://blockchain.info/rawblock/${1}${key1}${FMT2b}" )"
-	fi
 	echo >&2
 
 	#print json?
 	if [[ -n "$PJSON" ]]; then
 		printf 'JSON from the raw block info function.\n' 1>&2
 		echo "$RAWB"
-		return
-	fi
-
+		return 0
 	#print hex opt
-	if [[ -n "$HEXOPT" ]]; then
+	elif [[ -n "$HEXOPT" ]]; then
 		echo "$RAWB"
 		return 0
 	fi
 
-	#check json
-	if ! jq -e '.tx[]' <<< "$RAWB" &>/dev/null; then
-		printf '%s\nError: raw block data\n' >&2 "$RAWB"
-		return 1
-	fi
-
 	#print txs info
 	#get txs and call rawtxf function
-	RAWTX="$(jq -r '.tx[]' <<< "$RAWB")"
+	RAWTX="$(jq -r '.tx[]' <<< "$RAWB")" || return
 	rtxf
 
 	#print block info
@@ -629,14 +619,10 @@ raddf() {
 				"Balance: \(.final_balance)  \(.final_balance/100000000) BTC"
 				)' <<< "$SUMADD"
 		done
-		return 0
-	fi
-
-
 	#full address information
 	#single or multiaddrs?
 	#multi addr
-	if [[ "${#@}" -gt 1 || "$*" = *\|* ]]; then
+	elif [[ "${#@}" -gt 1 || "$*" = *\|* ]]; then
 
 		#get raw multi addr data
 		set -- ${@//|/ }
@@ -668,7 +654,6 @@ raddf() {
 		RAWTX="$(jq -r '.txs|reverse[]' <<< "$RAWADD")"
 		rtxf
 
-
 		printf '\n\nAddresses Info\n'
 		jq -r '.addresses[] |
 			"",
@@ -678,7 +663,6 @@ raddf() {
 			"Receivd: \(.total_received)  \(.total_received/100000000) BTC",
 			"Sent___: \(.total_sent)  \(.total_sent/100000000) BTC",
 			"Balance: \(.final_balance)  \(.final_balance/100000000) BTC"' <<< "$RAWADD"
-
 
 	#single addrr
 	else
@@ -992,30 +976,6 @@ utxf() {
 	printf 'TtValue: %.8f  BTC\n' "$(bc -l <<<"(${TOTALDELTA[*]/%/+}0)/100000000")"
 }
 
-#must have packages
-if ! command -v jq &>/dev/null
-then
-	echo 'JQ is required' >&2
-	exit 1
-fi
-if command -v curl &>/dev/null
-then
-	YOURAPP=( curl -\# -L --compressed )
-	YOURAPP2=( curl -L --compressed )
-elif command -v wget &>/dev/null
-then
-	YOURAPP=( wget -q -O- --show-progress )
-	YOURAPP2=( wget -O- --show-progress )
-else
-	echo 'cURL or Wget is required' >&2
-	exit 1
-fi
-
-#request compressed response
-#if ! command -v gzip &>/dev/null; then
-#	printf 'warning: gzip may be required\n' 1>&2
-#fi
-
 #parse options
 while getopts ':abehijlmnprsutvx' opt
 do
@@ -1078,6 +1038,28 @@ done
 shift $((OPTIND -1))
 unset opt
 
+#must have packages
+if ! command -v jq &>/dev/null
+then echo 'JQ is required' >&2 ;exit 1
+fi
+if command -v curl &>/dev/null
+then
+	YOURAPP=( curl -\# -L --compressed )
+	YOURAPP2=( curl -L --compressed )
+elif command -v wget &>/dev/null
+then
+	YOURAPP=( wget -q -O- --show-progress )
+	YOURAPP2=( wget -O- --show-progress )
+else
+	echo 'cURL or Wget is required' >&2
+	exit 1
+fi
+
+#request compressed response
+#if ! command -v gzip &>/dev/null; then
+#	printf 'warning: gzip may be required\n' 1>&2
+#fi
+
 #api key for this programme
 #usage:?key=${key}
 key=b31ba37b-2506-46a9-a4a0-54c276c68884
@@ -1086,68 +1068,51 @@ export key
 #https://www.blockchain.com/api/api_receive
 
 #check function args
-if [[ -n "$ADDOPT" || -n "$TXOPT" ]] &&
-	[[ -z "$1" ]]
-then
-	echo 'Err -- hash is needed' >&2
-	exit 1
+if [[ -n "$ADDOPT" || -n "$TXOPT" ]] && [[ -z "$1" ]]
+then echo 'Err -- hash is needed' >&2 ;exit 1
 fi
 
 #call opts
 #new block stream
 if [[ -n "$STREAMOPT" ]]
-then
-	sstreamf
+then sstreamf
 #blockchain information / stats
 elif [[ -n "$ROPT" ]]
-then
-	hashratef
+then hashratef
 elif [[ "$BLKCHAINOPT" = info ]]
-then
-	blkinfof
+then blkinfof
 elif [[ "$BLKCHAINOPT" = chair ]]
-then
-	chairblkinfof
+then chairblkinfof
 #blocks
 elif [[ -n "$LATESTOPT" ]]
-then
-	latestf
+then latestf
 #addresses
 elif [[ "$ADDOPT" = info ]]
-then
-	raddf "$@"
+then raddf "$@"
 #addresses -- unspent tx
 elif [[ -n "$UTXOPT" ]]
-then
-	utxaddf "$@"
+then utxaddf "$@"
 #mempool (blockchair)
 elif [[ -n "$MEMOPT" ]]
-then
-	utxf
+then utxf
 #call opt functions
 else
 	for arg in "$@"
 	do
 		#block by height
 		if [[ -n "$HOPT" ]]
-		then
-			hblockf "$arg"
+		then hblockf "$arg"
 		#block by hash
 		elif [[ -n "$RAWOPT" ]]
-		then
-			rblockf "$arg"
+		then rblockf "$arg"
 		elif [[ "$ADDOPT" = chair ]]
-		then
-			chairaddf "$arg"
+		then chairaddf "$arg"
 		#transactions
 		elif [[ "$TXOPT" = info ]]
-		then
-			rtxf "$arg"
+		then rtxf "$arg"
 		elif [[ "$TXOPT" = chair ]]
-		then
-			chairrtxf "$arg"
-		else
-			notok=1
+		then chairrtxf "$arg"
+		else notok=1
 		fi
 		#get exit code
 		RET+=($?)
@@ -1167,32 +1132,22 @@ else
 
 			#is legacy addr?
 			if [[ "$arg" =~ ^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$ ]]
-			then
-				#addr from blockchain.com
-				raddf "$arg"
+			then raddf "$arg"      #addr from blockchain.com
 			#is bech32 addr?
 			elif [[ "$arg" =~ ^bc(0([ac-hj-np-z02-9]{39}|[ac-hj-np-z02-9]{59})|1[ac-hj-np-z02-9]{8,87})$ ]]
-			then
-				#addr from blockchair
-				chairaddf "$arg"
+			then chairaddf "$arg"  #addr from blockchair
 			#is tx or block?
 			elif [[ "$arg"  =~ ^[a-fA-F0-9]{64}$ ]]
 			then
 				#is block?
 				if [[ "$arg" =~ ^[0]{8}[a-fA-F0-9]{56}$ ]]
-				then
-					#block by hash
-					rblockf "$arg"
-				else
-					#tx hash
-					rtxf "$arg"
+				then rblockf "$arg"  #block by hash
+				else rtxf "$arg"     #tx hash
 				fi
+			#block by height
 			elif [[ "$arg" =~ ^[0-9]+$ ]] && ((arg<1000000)) 2>/dev/null
-			then
-				#block by height
-				hblockf "$arg"
-			else
-				notok=1
+			then hblockf "$arg"
+			else notok=1
 			fi
 			#get exit code
 			RET+=($?)
@@ -1206,8 +1161,7 @@ else
 	#default function
 	#summary information of latest block
 	if (($#==0)) || ((notok))
-	then
-		latestf
+	then latestf
 	fi
 fi
 #get exit code
