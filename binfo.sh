@@ -1,11 +1,10 @@
 #!/bin/bash
 # binfo.sh -- bitcoin blockchain explorer for bash
-# v0.9.17  apr/2021  by mountaineerbr
+# v0.9.18  apr/2021  by mountaineerbr
 
 #defaults
 
-#don't change these
-#make sure locale is set correctly
+#try to set lc_numeric to C 
 export LC_NUMERIC=C
 
 #format
@@ -1043,22 +1042,11 @@ if ! command -v jq &>/dev/null
 then echo 'JQ is required' >&2 ;exit 1
 fi
 if command -v curl &>/dev/null
-then
-	YOURAPP=( curl -\# -L --compressed )
-	YOURAPP2=( curl -L --compressed )
+then YOURAPP=( curl -\# -L --compressed )    YOURAPP2=( curl -L --compressed )
 elif command -v wget &>/dev/null
-then
-	YOURAPP=( wget -q -O- --show-progress )
-	YOURAPP2=( wget -O- --show-progress )
-else
-	echo 'cURL or Wget is required' >&2
-	exit 1
+then YOURAPP=( wget -q -O- --show-progress ) YOURAPP2=( wget -O- --show-progress )
+else echo 'cURL or Wget is required' >&2 ;exit 1
 fi
-
-#request compressed response
-#if ! command -v gzip &>/dev/null; then
-#	printf 'warning: gzip may be required\n' 1>&2
-#fi
 
 #api key for this programme
 #usage:?key=${key}
