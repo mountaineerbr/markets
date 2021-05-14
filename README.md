@@ -68,9 +68,8 @@ __tradingview.sh__ | just open some tradingview windows at the right screen posi
 __uol.sh__ | Fetches rates from uol service provider public api. Puxa dados de páginas da api pública do uol economia
 __wexplorer.sh__ | get some data from <https://www.walletexplorer.com>; this script usage is not very comprehensible and API server may be slow
 __whalealert.sh__ | latest whale transactions from <whale-alert.io>; this is such a bad api, very limited, not even worth having written a script for this, free api key
-__yahooscrape.sh__ | scrape some yahoo! finance tickers
-
-For a large list of Yahoo! Finance symbols, [check my lists](../extra/yahooFinanceSymbols)
+__yahooFinanceSymbols/__ | some Yahoo! Finance symbol scrappings
+__yahooscrape.sh__ | scrape Yahoo! Finance tickers
 
 ---
 
