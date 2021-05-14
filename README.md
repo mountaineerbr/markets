@@ -1,5 +1,5 @@
 # markets
-![ScreenShot](https://github.com/mountaineerbr/markets/blob/master/git_screenshot1.png)
+![ScreenShot](git_screenshot1.png)
 Fig. 1. Scripts on display: binance.sh, bitfinex.sh, binfo.sh,
 bitstamp.sh, cgk.sh, cmc.sh and others.
 
@@ -70,7 +70,7 @@ __wexplorer.sh__ | get some data from <https://www.walletexplorer.com>; this scr
 __whalealert.sh__ | latest whale transactions from <whale-alert.io>; this is such a bad api, very limited, not even worth having written a script for this, free api key
 __yahooscrape.sh__ | scrape some yahoo! finance tickers
 
-For a large list of Yahoo! Finance symbols, [check my lists](https://github.com/mountaineerbr/extra/tree/master/yahooFinanceSymbols)
+For a large list of Yahoo! Finance symbols, [check my lists](../extra/yahooFinanceSymbols)
 
 ---
 
@@ -87,11 +87,11 @@ de funcionar a qualquer momento ou serem limitadas rapidamente.
   
 ---
 
-## SEE ALSO / TAMBÉM VEJA</b>
+## SEE ALSO / TAMBÉM VEJA
 
 _bcalc.sh_ -- a wrapper for bash calculator and zshell maths that keeps a record of results
 
-<https://github.com/mountaineerbr/scripts/blob/master/bcalc.sh>
+<https://mountaineerbr.github.io/repo/scripts/bcalc.sh>
 
 Alexander Epstein's _currency_bash-snipet.sh_ uses the same API as _erates.sh_
 
