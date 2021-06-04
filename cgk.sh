@@ -2,7 +2,7 @@
 # cgk.sh -- coingecko.com api access
 # v0.17.3  may/2021  by mountaineerbr
 
-#defaults 
+#defaults
 
 #from currency, defaults=btc
 DEFCUR=btc
