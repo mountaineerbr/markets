@@ -56,13 +56,11 @@ __erates.sh__ | <Exchangeratesapi.io> public api, currency converter (same API a
 __foxbit.sh__ | FoxBit exchange public API rates. Acesso ao api público da Foxbit para cotações
 __hgbrasil.sh__ | Bovespa and tax rates. Cotações de ações da Bovespa e índices e taxas (CDI e SELIC) do api da hg brasil
 __myc.sh__ | <Mycurrency.net> public api, central bank currency rate converter
-__metais.sh__ | script to retrieve various rates, mostly using other scripts from this repo; there are some unique shell functions, though
 ___mkt_func.sh___ | shell functions (bash and z-shell) to get some market data from public apis. Google Finance and Yahoo! Finance hacks.. these functions need improvement; source from this file to make these funtions available in your shell
 __novad.sh__ | puxa dados das apis públicas da NovaDax brasileira. fetch public api data from NovaDax brazilian enchange
 __openx.sh__ | <Openexchangerates.org> central bank currencies and precious metals converter, free api key
 __ourominas.sh__ | Ourominas (precious metals exchange) rates public api. Pega taxas da api pública da Ouro Minas
 __parmetal.sh__ | Parmetal (precious metals exchange) rates public api. Pega taxas da api pública da Parmetal
-__pricesroll.sh__ | script to open and arrange terminal windows with these market scripts on X
 __stocks.sh__ | <Financialmodelingprep.com> latest and historical stock and major index rates
 __tradingview.sh__ | just open some tradingview windows at the right screen position with xdotool
 __uol.sh__ | Fetches rates from uol service provider public api. Puxa dados de páginas da api pública do uol economia
