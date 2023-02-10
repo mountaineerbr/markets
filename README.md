@@ -75,6 +75,8 @@ Check some bitcoin-related scripts at my other repo, such as
 
 **[Some market-related shell functions](https://github.com/mountaineerbr/dotfiles/blob/main/.rc)** can be found at my shell config file.
 
+---
+
 Alexander Epstein's _currency_bash-snipet.sh_ uses the same API as _erates.sh_
 
 <https://github.com/alexanderepstein>
