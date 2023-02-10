@@ -1,4 +1,6 @@
 # markets
+Bitcoin, crypto and stock related 
+
 ![ScreenShot](git_screenshot1.png)
 Fig. 1. Scripts on display: binance.sh, bitfinex.sh, binfo.sh,
 bitstamp.sh, cgk.sh, cmc.sh and others.
