@@ -191,7 +191,7 @@ ou
 
 
 ```bash
-bash binance.sh</i>
+bash binance.sh
 ```
 
 Alternativeamente, você pode clonar este repo inteiro.
@@ -212,7 +212,7 @@ Alguns scripts precisam de chaves de API gratuitas.
 ---
 
 > If useful, please consider sending me a nickle! =)
->  
+> 
 > Se foi útil, considere me lançar um trocado!
 >
 >    bc1qlxm5dfjl58whg6tvtszg5pfna9mn2cr2nulnjr
