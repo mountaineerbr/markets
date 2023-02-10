@@ -3,93 +3,75 @@
 Fig. 1. Scripts on display: binance.sh, bitfinex.sh, binfo.sh,
 bitstamp.sh, cgk.sh, cmc.sh and others.
 
----
 
 ## SUMMARY
 
 This is a repo related to crypto, bank currency and stock markets.
 
-Run the script with `-h` for a help page. Check below for script descriptions,
-download and basic instructions to run them.
+Run scripts with `-h` for help pages. These bash scripts mostly need
+`curl`. Some of them will work if you have got `wget` instead.
+Some other important packages are `jq` and `websocat` or `wscat` for some scripts.
 
-These bash scripts mostly need `curl`. Some of them will work
-if you have got `wget` instead, but not all of them.
-Other important packages are `jq` and `websocat` or `wscat` for some scripts.
+_I cannot promise to follow up api changes and update these scripts
+once they start failing._
 
-I cannot promise to follow up api changes and update these scripts
-once they start failing.  So I may just remove failing scripts
-or leave them broken..
-
----
 
 ## SUMÁRIO
 
-Este repo é relacionado com mercados de cripto, de moedas de
-banco centrais e ações. Rode os scripts com `-h` para uma página de ajuda.
+Este repo é relacionado com mercados cripto, moedas de
+banco centrais e ações. Rode os scripts com `-h` para páginas de ajuda.
 
 A maioria desses scripts de bash precisam do `curl`.
-Alguns irão funcionar se você tiver somente o `wget`, mas não todos.
-Outros pacotes importantes para alguns scripts são `jq` e
+Alguns irão funcionar se você tiver somente o `wget`.
+Alguns outros pacotes importantes para alguns scripts são `jq` e
 'websocat' ou `wscat`.
 
-Não posso prometer acompanhar as alterações das APIs e atualizar esses
-scripts assim que começarem a falhar.
-Então, posso remover scripts com falha ou deixá-los quebrados..
+_Não posso prometer acompanhar as alterações das APIs e atualizar esses
+scripts assim que começarem a falhar._
 
----
 
 ## INDEX / ÍNDICE
 
-SCRIPT NAME | DESCRIPTION
-:-----------|:-----------
-__alpha.sh__ | Stocks and currency rates from <alphaavantage.co>, most popular yahoo finance api alternative; free api key
-__bakkt.sh__ | Price and contract/volume tickers from bakkt public api
-__binance.sh__ |  Binance public API, crypto converter, prices, book depth, coin ticker
-__binfo.sh__ | Blockchain explorer for bitcoin; uses <blockchain.info> and <blockchair.com> public apis; notification on new block found
-__bitstamp.sh__ | Bitstamp exchange public api for live trade prices/info
-__bitfinex.sh__ | Bitfinex exchange public api for live trade prices
-__brasilbtc.sh__ | Fetches bitcoin rates from brazilian exchanges public apis. Puxa cotações de bitcoin de agências de câmbio brasileiras de apis públicas
-___cgk.sh___ | <Coinggecko.com> public api, convert one crypto, bank/fiat or metal currency into any another, market ticker, cryptocurrency ticker. This is my favorite everyday-use script for all-currency rates!
-__clay.sh__ | <Currencylayer.com> central bank currency, precious metal and cryptocurrency converter, free api key
-__cmc.sh__ |  <Coinmarketcap.com> convert any amount of one crypto, bank/fiat currency or metal into any another, NON-public api access
-__erates.sh__ | <Exchangeratesapi.io> public api, currency converter (same API as Alexander Epstein's Bash-Snippets/currency)
-__foxbit.sh__ | FoxBit exchange public API rates. Acesso ao api público da Foxbit para cotações
-__hgbrasil.sh__ | Bovespa and tax rates. Cotações de ações da Bovespa e índices e taxas (CDI e SELIC) do api da hg brasil
-__myc.sh__ | <Mycurrency.net> public api, central bank currency rate converter
-__metais.sh__ | script to retrieve various rates, mostly using other scripts from this repo; there are some unique shell functions, though
-___mkt_func.sh___ | shell functions (bash and z-shell) to get some market data from public apis. Google Finance and Yahoo! Finance hacks.. these functions need improvement; source from this file to make these funtions available in your shell
-__novad.sh__ | puxa dados das apis públicas da NovaDax brasileira. fetch public api data from NovaDax brazilian enchange
-__openx.sh__ | <Openexchangerates.org> central bank currencies and precious metals converter, free api key
-__ourominas.sh__ | Ourominas (precious metals exchange) rates public api. Pega taxas da api pública da Ouro Minas
-__parmetal.sh__ | Parmetal (precious metals exchange) rates public api. Pega taxas da api pública da Parmetal
-__pricesroll.sh__ | script to open and arrange terminal windows with these market scripts on X
-__stocks.sh__ | <Financialmodelingprep.com> latest and historical stock and major index rates
-__tradingview.sh__ | just open some tradingview windows at the right screen position with xdotool
-__uol.sh__ | Fetches rates from uol service provider public api. Puxa dados de páginas da api pública do uol economia
-__wexplorer.sh__ | get some data from <https://www.walletexplorer.com>; this script usage is not very comprehensible and API server may be slow
-__whalealert.sh__ | latest whale transactions from <whale-alert.io>; this is such a bad api, very limited, not even worth having written a script for this, free api key
-__yahooscrape.sh__ | scrape some yahoo! finance tickers
+NAME | DESCRIPTION
+:-------------|:-----------
+[bakkt.sh](bakkt.sh) | Price and contract/volume tickers from bakkt public api
+[binance.sh](binance.sh) |  Binance public API, crypto converter, prices, book depth, coin ticker
+[binfo.sh](binfo.sh) | Blockchain explorer for bitcoin; uses <blockchain.info> and <blockchair.com> public apis; notification on new block found
+[brasilbtc.sh](brasilbtc.sh) | Fetches bitcoin rates from brazilian exchanges public apis. Puxa cotações de bitcoin de agências de câmbio brasileiras de apis públicas
+[cgk.sh](cgk.sh) | <Coinggecko.com> public api, convert one crypto, bank/fiat currency or metal into any another, market ticker, cryptocurrency ticker. This is my favorite everyday-use script for all-currency rates!
+[cmc.sh](cmc.sh) |  <Coinmarketcap.com> convert any amount of one crypto, bank/fiat currency or metal into any another, NON-public api access
+[myc.sh](myc.sh) | <Mycurrency.net> public api, central bank currency rate converter
+[novad.sh](novad.sh) | puxa dados das apis públicas da NovaDax brasileira. fetch public api data from NovaDax brazilian enchange
+[ourominas.sh](ourominas.sh) | Ourominas (precious metals exchange) rates public api. Pega taxas da api pública da Ouro Minas
+[parmetal.sh](parmetal.sh) | Parmetal (precious metals exchange) rates public api. Pega taxas da api pública da Parmetal
+[stocks.sh](stocks.sh) | <Financialmodelingprep.com> latest and historical stock and major index rates
+[uol.sh](uol.sh) | Fetches rates from uol service provider public api. Puxa dados de páginas da api pública do uol economia
+[whalealert.sh](whalealert.sh) | Data from whale-alert.io free api with the latest whale transactions.
+[yahooscrape.sh](yahooscrape.sh) | Scrape some Yahoo! Finance tickers
 
-For a large list of Yahoo! Finance symbols, [check my Yahoo! Finance scrapings](../extra/yahooFinanceSymbols)
-
----
 
 ## API KEYS / CHAVES DE API
 
 Please create free API keys and add them to shell environment or set
-them in the script head source code. Demo api keys were added to the scripts,
-however they may stop working at any time or get rate limited quickly.
+them in the script head source code. Demo api keys may have been
+added to the scripts, however they may stop working at any time
+or get rate limited quickly.
 
 Por favor, crie chaves de API grátis e as adicione no ambiente da shell
 ou as configure na cabeça do código-fonte dos scripts. Chaves para fins
-de demonstração foram adicionadas aos scripts, porém elas podem parar 
-de funcionar a qualquer momento ou serem limitadas rapidamente.
-  
----
+de demonstração podem ter sido adicionadas aos scripts, porém elas
+podem parar de funcionar a qualquer momento ou serem limitadas rapidamente.
+ 
 
 ## SEE ALSO / TAMBÉM VEJA
 
-_[bcalc.sh](../scripts/bcalc.sh)_ -- a wrapper for bash calculator and zshell maths that keeps a record of results
+**[Scripts Repo](https://github.com/mountaineerbr/scripts)** -
+Check some bitcoin-related scripts at my other repo, such as
+[binfo.sh](https://github.com/mountaineerbr/scripts/blob/main/binfo.sh),
+[bitcoin.blk.sh](https://github.com/mountaineerbr/scripts/blob/main/bitcoin.blk.sh),
+[bitcoin.hx.sh](https://github.com/mountaineerbr/scripts/blob/main/bitcoin.hx.sh),
+[bitcoin.tx.sh](https://github.com/mountaineerbr/scripts/blob/main/bitcoin.tx.sh) and
+[blockchair.btcoutputs.sh](https://github.com/mountaineerbr/scripts/blob/main/blockchair.btcoutputs.sh).
 
 
 Alexander Epstein's _currency_bash-snipet.sh_ uses the same API as _erates.sh_
@@ -109,9 +91,8 @@ Brandleesee's _Mop: track stocks the hacker way_
 <https://github.com/mop-tracker/mop>
 
 Packages `units` and `qalc` (qalculate) also have got
-bank currency rate convertion although they are not as powerful as my scripts.
+bank currency rate convertion.
 
----
 
 ## IMPORTANT / IMPORTANTE
 
@@ -119,15 +100,6 @@ None of these scripts are supposed to be used under truly professional constrain
 
 Nenhum desses scripts deve ser usado em meio profissional sem análise prévia. Faça sua própria pesquisa!
 
----
-
-> If useful, please consider sending me a nickle! =)
->  
-> Se foi útil, considere me lançar um trocado!
->
->    bc1qlxm5dfjl58whg6tvtszg5pfna9mn2cr2nulnjr
-
----
 
 ## BASIC INSTRUCTIONS
 
@@ -175,8 +147,7 @@ chmod +x ~/Downloads/markets/*.sh
 
 You can use bash aliases to individual scripts or place them under your $PATH .
 
-Some scripts need free api keys. You can test these scripts with
-the builtin demo key, however that may stop working at any time.
+Some scripts may need free api keys.
 
 ---
 
@@ -232,21 +203,14 @@ Você pode fazer bash aliases individuais para os scripts
 ou colocar os scripts sob seu $PATH .
 
 Alguns scripts precisam de chaves de API gratuitas.
-Você pode testá-los com as chaves de APIs de demonstração
-adicionadas nos scripts, porém elas podem parar de funcionar
-a qualquer tempo.
 
 ---
 
-> Please consider sending me a nickle!  = )
+> If useful, please consider sending me a nickle! =)
+>  
+> Se foi útil, considere me lançar um trocado!
 >
 >    bc1qlxm5dfjl58whg6tvtszg5pfna9mn2cr2nulnjr
 
-
-
-binfo.sh
-bitcoin.blk.sh
-bitcoin.hx.sh
-bitcoin.tx.sh
-blockchair.btcoutputs.sh
+---
 
