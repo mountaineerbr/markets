@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Binance.sh  --  Market data from Binance public APIs
-# v0.13.15  feb/2023  by mountaineerbr
+# v0.13.16  feb/2023  by mountaineerbr
 
 #defaults
 
@@ -748,7 +748,7 @@ do
 			WHICHB='us'
 			;;
 		V) #script version
-			grep -m1 '\# v' "$0"
+			grep -m1 '# v' "$0"
 			exit 0
 			;;
 		v) #verbose for some funcs

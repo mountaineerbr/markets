@@ -267,7 +267,7 @@ do
 			;;
 		( v )
 			#script version
-			grep -m1 '\# v' "${0}"
+			grep -m1 '# v' "${0}"
 			exit 0
 			;;
 		( \? )

@@ -378,7 +378,7 @@ while getopts ':htHijk:lpqslv' opt; do
 			QOPT=1
 			;;
 		( v ) #version of this script
-			grep -m1 '\# v' "${0}"
+			grep -m1 '# v' "${0}"
 			exit 0
 			;;
 		( \? )

@@ -409,7 +409,7 @@ while getopts ":bcjhvm" opt; do
 		[[ -z "${MOPT}" ]] && MOPT=1 || MOPT=2
 		;;
     	v ) # Version of Script
-      		grep -m1 '\# v' "${0}"
+      		grep -m1 '# v' "${0}"
       		exit
       		;;
 	\? )
