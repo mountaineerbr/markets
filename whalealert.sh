@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # WhaleAlert.sh -- whale-alert.io API Access
 # v0.1.14  oct/2020  by mountaineerbr
 

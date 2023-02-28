@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # stocks.sh  -- Stock and index rates in Bash
 # v0.2.19  sep/2020  by mountaineerbr
 

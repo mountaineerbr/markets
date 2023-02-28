@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # v0.3.12  jun/2020  by mountaineer_br
 # Free Software under the GNU Public License 3
 # Ourominas não trabalha com Prata!

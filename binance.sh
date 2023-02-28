@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Binance.sh  --  Market data from Binance public APIs
-# v0.13.14  dec/2021  by mountaineerbr
+# v0.13.15  feb/2023  by mountaineerbr
 
 #defaults
 
@@ -223,7 +223,7 @@ cachef()
 	local url tmpfile
 	url="$1"
 	tmpfile="$CACHEDIR/${url//[\/:]/}".cache
-	if [[ ! -s "$tmpfile" || "$OPTE" > 0 ]]
+	if [[ ! -s "$tmpfile" || "$OPTE" -gt 0 ]]
 	then "${YOURAPP[@]}" "$url" | tee "$tmpfile" 
 	else cat -- "$tmpfile"
 	fi
@@ -793,7 +793,7 @@ fi
 
 #set websocket pkg
 #websocat command
-if [[ "$IOPT$SOPT$BOPT$TOPT" && -z "$CURLOPT" ]]
+if [[ -n "$IOPT$SOPT$BOPT$TOPT" && -z "$CURLOPT" ]]
 then
 	#choose websocat or wscat
 	if ((XOPT==0)) && command -v websocat &>/dev/null
@@ -801,7 +801,7 @@ then
 	elif command -v wscat &>/dev/null
 	then WEBSOCATC=( wscat -c ) ;unset AUTOR
 	else
-		if [[ "$IOPT$SOPT" ]]
+		if [[ -n "$IOPT$SOPT" ]]
 		then 	echo "Websocat and Wscat not found, setting Curl option -r" >&2
 			CURLOPT=1
 		else

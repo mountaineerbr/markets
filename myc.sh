@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # myc.sh - Currency converter, API access to MyCurrency.com
 # v0.4.2  jan/2021  by mountaineerbr
 

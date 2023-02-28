@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # cgk.sh -- coingecko.com api access
-# v0.18.2  jan/2021  by mountaineerbr
+# v0.18.3  jan/2023  by mountaineerbr
 # requires jq and curl/wget
 
 #defaults
@@ -280,7 +280,7 @@ cachef()
 {
 	local url tmpfile
 	url="$1" tmpfile="$2"
-	if [[ ! -s "$tmpfile" || "$OPTC" > 0 ]]
+	if [[ ! -s "$tmpfile" || "$OPTC" -gt 0 ]]
 	then "${YOURAPP[@]}" "$url" >"$tmpfile"  #create or update cache
 	fi
 }
@@ -839,7 +839,7 @@ changecf()
 	vsto="${1,,}"
 
 	#is a know fiat?
-	if [[ "$OPTA" || \ "${FIATCODESSTRICT[*]}"\  = *\ "$symbol"\ * ]]
+	if [[ -n "$OPTA" || \ "${FIATCODESSTRICT[*]}"\  = *\ "$symbol"\ * ]]
 	then
 		echo "$symbol"
 	#try to match in currency list
@@ -1150,9 +1150,9 @@ if [[ -z "$SCL" ]]
 then
 	SCL="$SCLDEFAULTS"
 	#set result scale to 2 if opt -o is set
-	[[ "$OOPT" ]] && SCL=2
+	[[ -n "$OOPT" ]] && SCL=2
 	#set result scale to nought if opt -x is set
-	[[ "$SATOPT" && "${3,,}" = btc ]] && SCL=0
+	[[ -n "$SATOPT" && "${3,,}" = btc ]] && SCL=0
 fi
 
 #bank opt?

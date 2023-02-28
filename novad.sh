@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # novad.sh  --  market rates from novadax public apis
 # v0.1.7  aug/2020  by mountaineerbr
 

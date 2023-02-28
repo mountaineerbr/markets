@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Brasilbtc.sh -- Puxa Taxas de Bitcoin de Exchanges do Brasil
 # v0.6.9  dec/2020  by mountaineerbr
 

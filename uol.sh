@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Uol.sh -- Puxa cotações do portal do UOL
 # v0.2.25  jan/2021  by mountaineer_br
 

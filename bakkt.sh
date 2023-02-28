@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # v0.1.23  jan/2021  by castaway
 
 #make sure locale is set correctly

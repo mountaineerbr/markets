@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # cmc.sh -- coinmarketcap.com api access
-# v0.11.12  apr/2021  by mountaineerbr
+# v0.11.13  feb/2023  by mountaineerbr
 
 #your cmc api key
 #CMCAPIKEY=
