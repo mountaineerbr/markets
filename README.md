@@ -55,10 +55,3 @@ Brandleesee's _Mop: track stocks the hacker way_
 Packages `units` and `qalc` (qalculate) also have got
 bank currency rate convertion.
 
-
----
-
-    Please consider sending me a nickle!  = )
-
-        bc1qlxm5dfjl58whg6tvtszg5pfna9mn2cr2nulnjr
-
