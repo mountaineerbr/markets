@@ -1,5 +1,5 @@
-# scripts
-Shell script collection
+# markets
+Shell scripts related to finance, stocks, and cryptocurrency
 
 ---
 
