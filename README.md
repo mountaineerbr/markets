@@ -3,13 +3,16 @@ Shell scripts related to finance, stocks, and cryptocurrency
 
 ---
 
-# **This repo moved**
+
+## Repo Moved
+
+**This repo moved**
 [__to GitLab__](https://gitlab.com/mountaineerbr/scripts/-/tree/main/markets)
 and 
 [__to GitHub__](https://github.com/mountaineerbr/scripts/tree/main/markets).
 
----
 
+---
 
 <!--
      The following list may and will be out-of-sync  -  last updated: 02-Dec-2025
