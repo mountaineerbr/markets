@@ -14,14 +14,13 @@ and
 
 ---
 
-<br/>
-
 <!--
      The following list may and will be out-of-sync  -  last updated: 02-Dec-2025
 
      -->
 
-## INDEX / ÍNDICE
+
+## INDEX
 
 NAME | DESCRIPTION
 :-------------|:-----------
@@ -47,7 +46,7 @@ Nenhum desses scripts deve ser usado em meio profissional sem análise prévia. 
 
 -->
 
-
+<!--
 ## SEE ALSO
 
 Alexander Epstein's _currency_bash-snipet.sh_ uses the same API as _erates.sh_
@@ -69,4 +68,5 @@ Brandleesee's _Mop: track stocks the hacker way_
 Packages `units` and `qalc` (qalculate) also have got
 bank currency rate convertion.
 
+-->
 
